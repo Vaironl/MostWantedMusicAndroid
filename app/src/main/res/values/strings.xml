@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MostWantedRadio</string>
+    <string name="title_home">Images</string>
+    <string name="title_dashboard">Live Radio</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="facebook_app_id">162033057701628</string>
+</resources>
