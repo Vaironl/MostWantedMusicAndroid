@@ -1,5 +1,8 @@
 package com.example.vaironl.mostwantedradio;
+import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -42,6 +45,23 @@ public class MainActivity extends AppCompatActivity {
     private void init(){
         imageTL = (TableLayout) findViewById(R.id.imagesTableLayout);
 
+    }
+
+    private void getImages(){
+        AccessToken accessToken = null;
+
+        GraphRequest request = GraphRequest.newGraphPathRequest(null, "/GameOfThrones/photos",
+                new GraphRequest.Callback(){
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        //Insert your code here
+                    }
+                });
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "picture");
+        request.setParameters(parameters);
+        request.executeAsync();
     }
 
     private void hideImages(){
