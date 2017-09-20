@@ -5,15 +5,26 @@ import com.facebook.AccessTokenSource;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.squareup.picasso.Picasso;
 
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +34,16 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
     private TableLayout imageTL;//imagesTableLayout
+    private Button addImageButton;
+    private WebView browser;
+    private String LINORADIOURL = "http://www.linoradio.com/es/home";
+    private String imageURLs[] = {"https://scontent-iad3-1.xx.fbcdn.net/v/t1.0-9/21370899_509698619368112_4050977821023319945_n.jpg?oh=a72e8346284549d3f6ee5f927b35130f&oe=5A54EE50",
+            "https://scontent-iad3-1.xx.fbcdn.net/v/t1.0-9/21462933_511336482537659_8145365664971928660_n.jpg?oh=70294a2537a9d995d19a13a3e200b563&oe=5A190DC3",
+            "https://scontent-iad3-1.xx.fbcdn.net/v/t1.0-9/21462834_510428682628439_2699983785360964199_n.jpg?oh=1f1c4c72dfab5c85558acc625bf9cb90&oe=5A1A4ADD",
+            "https://scontent-iad3-1.xx.fbcdn.net/v/t1.0-9/21317614_510182819319692_1574990176623324803_n.jpg?oh=7a1f7bb79b3bd564d3af1bb907a3e8e4&oe=5A4F1FF5",
+            "https://scontent-iad3-1.xx.fbcdn.net/v/t1.0-9/21317614_510182819319692_1574990176623324803_n.jpg?oh=7a1f7bb79b3bd564d3af1bb907a3e8e4&oe=5A4F1FF5",
+            "https://scontent-iad3-1.xx.fbcdn.net/v/t1.0-9/21317614_510182819319692_1574990176623324803_n.jpg?oh=7a1f7bb79b3bd564d3af1bb907a3e8e4&oe=5A4F1FF5",
+            "https://scontent-iad3-1.xx.fbcdn.net/v/t1.0-9/21317614_510182819319692_1574990176623324803_n.jpg?oh=7a1f7bb79b3bd564d3af1bb907a3e8e4&oe=5A4F1FF5"};
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -37,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
                     hideImages();
+
+
+
                     return true;
                 case R.id.navigation_notifications:
                     mTextMessage.setText(R.string.title_notifications);
@@ -50,51 +74,85 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         imageTL = (TableLayout) findViewById(R.id.imagesTableLayout);
-        getImages();
+
+        addImageButton = (Button) findViewById(R.id.addImage);
+
+        addImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                addImageToRow();
+                Toast.makeText(MainActivity.this, "|Clicked", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+        browser = (WebView) findViewById(R.id.browser);
+        browser.setWebViewClient(new WebViewClient());
+        browser.getSettings().setJavaScriptEnabled(true);
+        browser.loadUrl(LINORADIOURL);
+
 
     }
 
-    private void getImages() {
-        String ACCESSTOKEN = "EAACEdEose0cBAExzgEKkE7sCmST8IDZAxf3XIDOnfNjfCjUIkvVGY7aefmrqWZA76fZA94ZBa5VsjvQRLeTgRIckn4Y48G2pMTFZCQD0Ea6ZCNvGlzZANDdk3fSE2ZBcVpl9we14O4ke17EAjD0OcgfULwc38W7NO6TuEZAScQpaZCiBfqNIvWmbC9j8HL8Ijz42AqvxZB181wyyQZDZD";
-        AccessToken accessToken = null;
+    private void addImageToRow() {
 
-        GraphRequest request = GraphRequest.newMeRequest(
-                accessToken,
-                new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(
-                            JSONObject object,
-                            GraphResponse response) {
-                        // Application code
-                        if (response != null) {
-                            Log.i("GraphAPIInfo", "Response was null");
-                            Log.i("GraphAPIInfo", isObjectNull(object));
-                        } else {
-                            Log.i("GraphAPIInfo", response.getRawResponse());
+        TableRow newRow = new TableRow(MainActivity.this);
 
-                        }
+        int n = 0;
+        for (String link : imageURLs) {
 
-                    }
-                });
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,link");
-        request.setParameters(parameters);
-        request.executeAsync();
-    }
 
-    private String isObjectNull(Object object){
-        if(object != null){
-            return "It is not a null object";
+            ImageView image = new ImageView(MainActivity.this);
+
+            Picasso.with(MainActivity.this).load(link).fit().into(image);
+
+            image.setImageResource(R.drawable.com_facebook_button_icon);
+
+            newRow.addView(image);
+
+            ViewGroup.LayoutParams layoutParams = image.getLayoutParams();
+            layoutParams.width = 480;
+            layoutParams.height = 480;
+            image.setLayoutParams(layoutParams);
+
+            n++;
+
+            if (n == 2) {
+                n = 0;
+
+                imageTL.addView(newRow);
+
+                newRow = new TableRow(MainActivity.this); //creaters fresh row
+
+
+            }
+
         }
-        return "It is a null object";
+
+
     }
 
     private void hideImages() {
         imageTL.setVisibility(View.GONE);
+        addImageButton.setVisibility(View.GONE);
     }
 
     private void showImages() {
         imageTL.setVisibility(View.VISIBLE);
+        addImageButton.setVisibility(View.VISIBLE);
+        mTextMessage.setText("Images");
+    }
+
+    private void showLiveRadio() {
+        mTextMessage.setText("Live Radio");
+        browser.setVisibility(View.VISIBLE);
+//        browser.loadUrl(LINORADIOURL);
+        browser.loadUrl("https://www.google.com");
+    }
+
+    private void hideLiveRadio() {
+        browser.setVisibility(View.GONE);
     }
 
     @Override
